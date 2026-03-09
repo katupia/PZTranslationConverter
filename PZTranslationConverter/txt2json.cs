@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics.SymbolStore;
 using System.IO;
 using System.Text;
@@ -70,6 +71,7 @@ namespace Convert
             string outText = "{";
             bool firstDone = false;
             string s = "";
+            var keys = new Dictionary<string, bool>();
             while ((s = sr.ReadLine()) != null)
             {
                 MatchCollection matches = Regex.Matches(s, patternLine);
@@ -80,9 +82,13 @@ namespace Convert
                         outText += ",";
                     }
                     string key = match.Groups[1].Value;
-                    string value = match.Groups[2].Value;
-                    outText += "\n    \"" + key + "\": " + value;
-                    firstDone = true;
+                    if (!keys.ContainsKey(key))
+                    {
+                        keys.Add(key, true);
+                        string value = match.Groups[2].Value;
+                        outText += "\n    \"" + key + "\": " + value;
+                        firstDone = true;
+                    }
                 }
             }
             outText += "\n}";
