@@ -19,3 +19,6 @@ It behaves the same as by command line with target being the valid path of the d
 
 ## By double click
 It behaves the same by command line with target being the executable directory path
+
+## Translation Pattern used
+string patternLine = "\\s*(\\S[^=^\\s]*)\\s*=\\s*(\"[^\"]*\")";
