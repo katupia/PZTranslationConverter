@@ -77,14 +77,14 @@ namespace Convert
                 MatchCollection matches = Regex.Matches(s, patternLine);
                 foreach (Match match in matches)
                 {
-                    if (firstDone)
-                    {
-                        outText += ",";
-                    }
                     string key = match.Groups[1].Value;
                     if (!keys.ContainsKey(key))
                     {
                         keys.Add(key, true);
+                        if (firstDone)
+                        {
+                            outText += ",";
+                        }
                         string value = match.Groups[2].Value;
                         outText += "\n    \"" + key + "\": " + value;
                         firstDone = true;
