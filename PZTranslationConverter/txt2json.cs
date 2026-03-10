@@ -67,7 +67,7 @@ namespace Convert
             //& replace special character codes ?
             // Open the stream and read it back.
             using StreamReader sr = File.OpenText(path);
-            string patternLine = "\\s*(\\S[^=^\\s]*)\\s*=\\s*(\"[^\"]*\")";
+            string patternLine = "\\s*(\\S[^=^\\s]*)\\s*=\\s*\"(.*)\"";
             string outText = "{";
             bool firstDone = false;
             string s = "";
@@ -78,6 +78,7 @@ namespace Convert
                 foreach (Match match in matches)
                 {
                     string key = match.Groups[1].Value;
+                    key = key.Replace("ItemName_", "");
                     if (!keys.ContainsKey(key))
                     {
                         keys.Add(key, true);
@@ -86,7 +87,8 @@ namespace Convert
                             outText += ",";
                         }
                         string value = match.Groups[2].Value;
-                        outText += "\n    \"" + key + "\": " + value;
+                        value = value.Replace("\"", "\\\"");
+                        outText += "\n    \"" + key + "\": \"" + value + "\"";
                         firstDone = true;
                     }
                 }
