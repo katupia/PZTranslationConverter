@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics.SymbolStore;
 using System.IO;
@@ -38,6 +38,8 @@ namespace Convert
             "_TR",
             "_UA"
         };
+        private static string patternLine = "\\s*(\\S[^=^\\s]*)\\s*=\\s*\"(.*)\"";
+        //TODO evaluate sdk ZedScript regex (beware, it can return initial match without value): KEY_VALUE_TRANSLATION_REGEX = /^(?!\s*[--])\s*(?<key>\S+[^=]*\S+)\s*=\s*(?<quote>"(?<value>[\S ]*)")?(?<comma>,?)/;
         public static string convertFileName(string path)
         {
             //& remove name language suffix (e.g. _EN)
@@ -59,15 +61,15 @@ namespace Convert
             //& change file extension from .txt to .json
             //& change format to utf-8 (without BOM)
             //& replace
-            //key_. Name = "content_%-09*$^",
+            //key_. Name = "<anything>",
             //with
-            //"key_. Name": "content_%-09*$^",
+            //"key_. Name": "<anything>",
             //& remove last,
             //& remove anything before first {
+            //& remove ItemName_ prefix
             //& replace special character codes ?
-            // Open the stream and read it back.
+
             using StreamReader sr = File.OpenText(path);
-            string patternLine = "\\s*(\\S[^=^\\s]*)\\s*=\\s*\"(.*)\"";
             string outText = "{";
             bool firstDone = false;
             string s = "";
@@ -99,7 +101,7 @@ namespace Convert
             {
                 string outputPath = convertFileName(path);
                 using FileStream jsonFile = File.Create(outputPath);
-                UTF8Encoding encoding = new(false);//no BOM for PZ utf-8 of choice
+                UTF8Encoding encoding = new UTF8Encoding(false);//no BOM for PZ utf-8 of choice
                 byte[] outBytes = encoding.GetBytes(outText);
                 jsonFile.Write(outBytes, 0, outBytes.Length);
             }
