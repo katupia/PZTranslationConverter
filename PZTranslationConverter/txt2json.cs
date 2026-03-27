@@ -38,6 +38,13 @@ namespace Convert
             "_TR",
             "_UA"
         };
+
+        private static string[] prefixePatterns = {
+            "^(\\s*)ItemName_(.*)$",
+            "^(\\s*)EvolvedRecipeName_(.*)$",
+            "^(\\s*)Recipe_(.*)$"
+        };
+
         private static string patternLine = "\\s*(\\S[^=^\\s]*)\\s*=\\s*\"(.*)\"";
         //TODO evaluate sdk ZedScript regex (beware, it can return initial match without value): KEY_VALUE_TRANSLATION_REGEX = /^(?!\s*[--])\s*(?<key>\S+[^=]*\S+)\s*=\s*(?<quote>"(?<value>[\S ]*)")?(?<comma>,?)/;
         public static string convertFileName(string path)
@@ -66,7 +73,7 @@ namespace Convert
             //"key_. Name": "<anything>",
             //& remove last,
             //& remove anything before first {
-            //& remove ItemName_ prefix
+            //& remove ItemName_ prefix (& EvolvedRecipeName_, Recipe_)
             //& replace special character codes ?
 
             using StreamReader sr = File.OpenText(path);
@@ -80,7 +87,14 @@ namespace Convert
                 foreach (Match match in matches)
                 {
                     string key = match.Groups[1].Value;
-                    key = key.Replace("ItemName_", "");
+                    foreach (string prefixePattern in prefixePatterns) 
+                    {
+                        Match prefixMatch = Regex.Match(key, prefixePattern);
+                        if (prefixMatch.Success)
+                        {
+                            key = prefixMatch.Groups[1].Value + prefixMatch.Groups[2].Value;
+                        }
+                    }
                     if (!keys.ContainsKey(key))
                     {
                         keys.Add(key, true);
